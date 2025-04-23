@@ -1,0 +1,1 @@
+<div class="text-xl font-bold text-amber-500">E-Shop Admin</div> 
