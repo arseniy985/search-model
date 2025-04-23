@@ -113,6 +113,44 @@ php artisan storage:link
    - `payment_intent.payment_failed`
 5. Скопируйте Webhook Secret и добавьте его в `.env` (STRIPE_WEBHOOK_SECRET)
 
+#### Настройка туннелирования для локальной разработки через Stripe CLI
+
+Для тестирования webhook-ов на локальном окружении можно настроить туннелирование через Stripe CLI:
+
+1. Установите Stripe CLI:
+   ```bash
+   # macOS
+   brew install stripe/stripe-cli/stripe
+   
+   # Windows (через scoop)
+   scoop install stripe
+   
+   # Linux
+   # Загрузите бинарный файл с https://github.com/stripe/stripe-cli/releases/latest
+   ```
+
+2. Авторизуйтесь в Stripe:
+   ```bash
+   stripe login
+   ```
+
+3. Запустите туннель для перенаправления webhook-ов на ваш локальный сервер:
+   ```bash
+   stripe listen --forward-to http://localhost:8000/webhook/stripe
+   ```
+
+4. Сохраните выданный webhook signing secret в `.env` файл:
+   ```
+   STRIPE_WEBHOOK_SECRET=whsec_значение_из_вывода_команды
+   ```
+
+5. В отдельном терминале вы можете тестировать события:
+   ```bash
+   stripe trigger payment_intent.succeeded
+   ```
+
+Теперь все webhook-события будут перенаправляться на ваш локальный сервер через защищенный туннель.
+
 ### 7. Настройка Firebase
 
 1. Войдите в консоль Firebase (https://console.firebase.google.com/)
