@@ -247,7 +247,7 @@ php artisan queue:work
 
 ### Администратор
 - Email: admin@example.com
-- Password: password
+- Password: admin123
 
 ### Пользователь
 - Email: user@example.com
