@@ -31,8 +31,8 @@
                 }">
                     <div class="relative">
                         <template x-for="image in images">
-                            <div x-show="activeImage === image" class="aspect-w-3 aspect-h-2">
-                                <img :src="image" alt="" class="w-full h-96 object-contain mx-auto" />
+                            <div x-show="activeImage === image" class="aspect-w-1 aspect-h-1">
+                                <img :src="image" alt="" class="w-full h-[400px] object-contain mx-auto" />
                             </div>
                         </template>
                         <a @click.prevent="prev"

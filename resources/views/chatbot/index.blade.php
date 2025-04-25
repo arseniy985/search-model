@@ -112,8 +112,8 @@
                     const imageUrl = product.image || '{{ asset("images/placeholder.jpg") }}';
                     
                     productCard.innerHTML = `
-                        <div class="h-40 bg-gray-200 overflow-hidden">
-                            <img src="${imageUrl}" alt="${product.title}" class="w-full h-40 object-cover">
+                        <div class="h-80 bg-gray-200 overflow-hidden">
+                            <img src="${imageUrl}" alt="${product.title}" class="w-full h-80 object-cover">
                         </div>
                         <div class="p-4">
                             <h4 class="font-medium text-gray-900 truncate">${product.title}</h4>
