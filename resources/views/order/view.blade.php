@@ -35,45 +35,45 @@
 
             <h3 class="text-xl font-semibold mb-2">Purchased Items</h3>
             <div class="space-y-4">
-                @foreach ($order->items as $item)
-                    <!-- Order Item -->
+            @foreach ($order->items as $item)
+                <!-- Order Item -->
                     <div class="flex flex-col sm:flex-row items-center gap-4 border-b pb-4">
-                        <a href="{{ route('product.view', $item->product) }}"
-                            class="w-36 h-32 flex items-center justify-center overflow-hidden">
+                    <a href="{{ route('product.view', $item->product) }}"
+                        class="w-36 h-32 flex items-center justify-center overflow-hidden">
                             <img src="{{ Vite::asset('public/storage/' . $item->product->image) }}" class="object-cover" alt="{{ $item->product->title }}" />
-                        </a>
+                    </a>
                         <div class="flex flex-col justify-between flex-1">
-                            <div class="flex justify-between mb-3">
+                        <div class="flex justify-between mb-3">
                                 <h3 class="font-semibold text-lg">
                                     <a href="{{ route('product.view', $item->product) }}" class="text-purple-600 hover:text-purple-500">
-                                        {{ $item->product->title }}
+                                {{ $item->product->title }}
                                     </a>
-                                </h3>
+                            </h3>
                                 <span class="text-lg font-semibold">${{ $item->unit_price }}</span>
-                            </div>
-                            <div class="flex justify-between items-center">
+                        </div>
+                        <div class="flex justify-between items-center">
                                 <div class="flex items-center">Quantity: {{ $item->quantity }}</div>
                                 <span class="text-lg font-semibold">Total: ${{ $item->unit_price * $item->quantity }}</span>
-                            </div>
                         </div>
                     </div>
-                    <!--/ Order Item -->
-                @endforeach
+                </div>
+                <!--/ Order Item -->
+            @endforeach
             </div>
 
             @if (!$order->isPaid())
                 <div class="mt-6">
-                    <form action="{{ route('cart.checkout-order', $order) }}" method="POST">
-                        @csrf
+                <form action="{{ route('cart.checkout-order', $order) }}" method="POST">
+                    @csrf
                         <button class="btn-primary flex items-center justify-center w-full py-3">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                            </svg>
-                            Make a Payment
-                        </button>
-                    </form>
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                        </svg>
+                        Make a Payment
+                    </button>
+                </form>
                 </div>
             @endif
         </div>

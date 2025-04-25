@@ -6,7 +6,7 @@
         'title' => $product->title,
         'price' => $product->price,
         'addToCartUrl' => route('cart.add', $product),
-    ]) }})" class="container mx-auto">
+    ]) }})" class="mt-10 container mx-auto" data-product-id="{{ $product->id }}" data-product-slug="{{ $product->slug }}">
         <div class="grid gap-6 grid-cols-1 lg:grid-cols-5">
             <div class="lg:col-span-3">
                 <div x-data="{

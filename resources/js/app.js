@@ -18,43 +18,53 @@ document.addEventListener("alpine:init", async () => {
 
     Alpine.data("toast", () => ({
         visible: false,
-        delay: 5000,
+        timeout: null,
         percent: 0,
         interval: null,
-        timeout: null,
         message: null,
-        close() {
-            this.visible = false;
-            clearInterval(this.interval);
-        },
         show(message) {
             this.visible = true;
             this.message = message;
 
-            if (this.interval) {
-                clearInterval(this.interval);
-                this.interval = null;
-            }
             if (this.timeout) {
                 clearTimeout(this.timeout);
                 this.timeout = null;
             }
+            if (this.interval) {
+                clearInterval(this.interval);
+                this.interval = null;
+            }
 
             this.timeout = setTimeout(() => {
-                this.visible = false;
-                this.timeout = null;
-            }, this.delay);
+                this.hide();
+            }, 5000);
+
+            this.percent = 0;
             const startDate = Date.now();
-            const futureDate = Date.now() + this.delay;
+            const endDate = startDate + 5000;
             this.interval = setInterval(() => {
                 const date = Date.now();
-                this.percent = ((date - startDate) * 100) / (futureDate - startDate);
+                this.percent = ((date - startDate) * 100) / (endDate - startDate);
                 if (this.percent >= 100) {
                     clearInterval(this.interval);
                     this.interval = null;
                 }
             }, 30);
         },
+        hide() {
+            this.visible = false;
+            if (this.timeout) {
+                clearTimeout(this.timeout);
+                this.timeout = null;
+            }
+            if (this.interval) {
+                clearInterval(this.interval);
+                this.interval = null;
+            }
+        },
+        close() {
+            this.hide();
+        }
     }));
 
     Alpine.data("productItem", (product) => {

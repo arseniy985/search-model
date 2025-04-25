@@ -2,7 +2,7 @@
     mobileMenuOpen: false,
     cartItemsCount: {{ \App\Http\Helpers\Cart::getCartItemsCount() }},
 }" @cart-change.window="cartItemsCount = $event.detail.count"
-    class="flex justify-between bg-slate-800 shadow-md text-white">
+    class="flex justify-between items-center bg-slate-800 shadow-md text-white">
     <div>
         {{-- <img src="{{ Vite::asset('public/storage/Images/hyperx.png') }}" alt="HyperX Logo"
         style="wigdth: 40px; height: 40px"> --}}

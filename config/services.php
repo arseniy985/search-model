@@ -36,4 +36,8 @@ return [
         'secret' => env('STRIPE_SECRET'),
     ],
 
+    'openrouter' => [
+        'key' => env('OPENROUTER_API_KEY'),
+    ],
+
 ];

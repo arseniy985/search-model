@@ -46,7 +46,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/orders', [OrderController::class, 'index'])->name('order.index');
     Route::get('/order/{order}', [OrderController::class, 'view'])->name('order.view');
     Route::post('/order/{order}/buy-again', [OrderController::class, 'buyAgain'])->name('order.buyAgain');
+    Route::get('/chatbot', [App\Http\Controllers\ChatbotController::class, 'index'])->name('chatbot.index');
 });
+
+// Chatbot API - Available to all users
+Route::post('/chatbot/query', [App\Http\Controllers\ChatbotController::class, 'query'])->name('chatbot.query');
+
 Route::get('/search', [App\Http\Controllers\ProductController::class, 'search'])->name('products.search');
 
 Route::post('/webhook/stripe', [CheckoutController::class, 'webhook']);

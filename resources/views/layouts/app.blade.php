@@ -20,30 +20,266 @@
     </style>
 </head>
 
-<body>
-    @include('layouts.navigation')
+<body class="font-sans antialiased">
+    <div class="min-h-screen bg-gray-100">
+        @include('layouts.navigation')
 
-    <main class="p-5">
-        {{ $slot }}
-    </main>
+        <!-- Page Heading -->
+        @if (isset($header))
+            <header class="bg-white shadow">
+                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                    {{ $header }}
+                </div>
+            </header>
+        @endif
 
-    <!-- Toast -->
-    <div x-data="toast" x-show="visible" x-transition x-cloak @notify.window="show($event.detail.message)"
-        class="fixed w-[400px] left-1/2 -ml-[200px] top-16 py-2 px-4 pb-4 bg-emerald-500 text-white">
-        <div class="font-semibold" x-text="message"></div>
-        <button @click="close"
-            class="absolute flex items-center justify-center right-2 top-2 w-[30px] h-[30px] rounded-full hover:bg-black/10 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
-        <!-- Progress -->
-        <div>
-            <div class="absolute left-0 bottom-0 right-0 h-[6px] bg-black/10" :style="{ 'width': `${percent}%` }"></div>
+        <!-- Page Content -->
+        <main>
+            {{ $slot }}
+        </main>
+        
+        <!-- Toast -->
+        <div x-data="toast" x-show="visible" x-transition x-cloak @notify.window="show($event.detail.message)"
+            class="fixed w-[400px] left-1/2 -ml-[200px] top-16 py-2 px-4 pb-4 bg-emerald-500 text-white">
+            <div class="font-semibold" x-text="message"></div>
+            <button @click="close"
+                class="absolute flex items-center justify-center right-2 top-2 w-[30px] h-[30px] rounded-full hover:bg-black/10 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <!-- Progress -->
+            <div>
+                <div class="absolute left-0 bottom-0 right-0 h-[6px] bg-black/10" :style="{ 'width': `${percent}%` }"></div>
+            </div>
+        </div>
+        <!--/ Toast -->
+        
+        <!-- Floating Chatbot -->
+        <div id="floating-chatbot" class="fixed bottom-4 right-4 z-50">
+            <div x-data="{ 
+                open: false,
+                messages: [],
+                products: [],
+                isLoading: false,
+                chatInput: '',
+                
+                init() {
+                    this.messages.push({
+                        isUser: false,
+                        content: `
+# 👋 Здравствуйте!
+
+Я AI-ассистент HyperX Store, готов помочь вам найти идеальные товары в нашем каталоге.
+
+**Что я могу для вас сделать:**
+- Помочь найти товары по описанию
+- Рекомендовать популярные товары
+- Ответить на вопросы о нашем ассортименте
+
+Чем я могу помочь вам сегодня?`
+                    });
+                },
+                
+                toggleChat() {
+                    this.open = !this.open;
+                    if (this.open) {
+                        setTimeout(() => {
+                            this.$refs.chatContainer.scrollTop = this.$refs.chatContainer.scrollHeight;
+                            this.$refs.chatInput.focus();
+                        }, 100);
+                    }
+                },
+                
+                sendMessage() {
+                    if (this.isLoading || !this.chatInput.trim()) return;
+                    
+                    const message = this.chatInput.trim();
+                    this.messages.push({
+                        isUser: true,
+                        content: message
+                    });
+                    
+                    this.chatInput = '';
+                    this.isLoading = true;
+                    
+                    // Scroll to bottom
+                    setTimeout(() => {
+                        this.$refs.chatContainer.scrollTop = this.$refs.chatContainer.scrollHeight;
+                    }, 100);
+                    
+                    // Send API request
+                    fetch('{{ route("chatbot.query") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ message })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        this.isLoading = false;
+                        
+                        // Add the assistant's response
+                        this.messages.push({
+                            isUser: false,
+                            content: data.message
+                        });
+                        
+                        // Update products
+                        this.products = data.products;
+                        
+                        // Scroll to bottom
+                        setTimeout(() => {
+                            this.$refs.chatContainer.scrollTop = this.$refs.chatContainer.scrollHeight;
+                        }, 100);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        this.isLoading = false;
+                        
+                        this.messages.push({
+                            isUser: false,
+                            content: 'Sorry, there was an error processing your request. Please try again later.'
+                        });
+                        
+                        // Scroll to bottom
+                        setTimeout(() => {
+                            this.$refs.chatContainer.scrollTop = this.$refs.chatContainer.scrollHeight;
+                        }, 100);
+                    });
+                }
+            }"
+            @keydown.escape="open = false">
+                <!-- Chat Button -->
+                <button 
+                    @click="toggleChat" 
+                    class="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg transition duration-200 flex items-center justify-center"
+                    :class="{ 'rotate-45 transform': open }"
+                >
+                    <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                    <svg x-show="open" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                
+                <!-- Chat Window -->
+                <div 
+                    x-show="open" 
+                    x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 scale-90"
+                    x-transition:enter-end="opacity-100 scale-100"
+                    x-transition:leave="transition ease-in duration-100"
+                    x-transition:leave-start="opacity-100 scale-100"
+                    x-transition:leave-end="opacity-0 scale-90"
+                    class="absolute bottom-16 right-0 bg-white rounded-lg shadow-xl overflow-hidden flex flex-col"
+                    style="height: 600px; width: 500px;"
+                >
+                    <!-- Chat Header -->
+                    <div class="bg-blue-600 p-4 text-white">
+                        <h3 class="text-xl font-semibold">AI Shopping Assistant</h3>
+                        <p class="text-sm opacity-90">Ask me about products in our catalog!</p>
+                    </div>
+                    
+                    <!-- Chat Messages -->
+                    <div x-ref="chatContainer" class="flex-1 overflow-y-auto p-4 bg-gray-50 prose prose-sm max-w-none">
+                        <template x-for="(message, index) in messages" :key="index">
+                            <div :class="`chat-message ${message.isUser ? 'user' : 'assistant'} mt-3`">
+                                <div class="flex items-start">
+                                    <div :class="`w-10 h-10 rounded-full flex items-center justify-center text-white ${message.isUser ? 'bg-gray-400' : 'bg-blue-600'}`">
+                                        <template x-if="message.isUser">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                                            </svg>
+                                        </template>
+                                        <template x-if="!message.isUser">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                                            </svg>
+                                        </template>
+                                    </div>
+                                    <div :class="`ml-3 py-3 px-4 rounded-lg max-w-[90%] ${message.isUser ? 'bg-indigo-100' : 'bg-white border border-blue-100 shadow-sm'}`" x-html="message.content">
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                        
+                        <!-- Loading Indicator -->
+                        <div x-show="isLoading" class="chat-message assistant mt-3">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3 bg-white border border-blue-100 py-3 px-4 rounded-lg shadow-sm">
+                                    <div class="flex space-x-2">
+                                        <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
+                                        <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce delay-100"></div>
+                                        <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce delay-200"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Products (if available) -->
+                    <div x-show="products.length > 0" class="max-h-48 overflow-y-auto border-t border-gray-200 bg-white p-3">
+                        <p class="text-sm text-gray-600 mb-2 font-semibold">Рекомендуемые товары:</p>
+                        <div class="grid grid-cols-2 gap-3">
+                            <template x-for="product in products" :key="product.id">
+                                <a :href="product.url" class="block border rounded overflow-hidden hover:shadow-md transition group">
+                                    <div class="h-20 bg-gray-100 flex items-center justify-center overflow-hidden">
+                                        <img :src="product.image || '{{ asset('images/placeholder.jpg') }}'" :alt="product.title" class="w-full h-full object-cover group-hover:scale-105 transition">
+                                    </div>
+                                    <div class="p-2">
+                                        <p class="text-sm font-medium text-gray-900 truncate group-hover:text-blue-600" x-text="product.title"></p>
+                                        <div class="flex justify-between items-center mt-1">
+                                            <p class="text-sm font-bold text-blue-600" x-text="'$' + product.price.toFixed(2)"></p>
+                                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Подробнее</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </template>
+                        </div>
+                    </div>
+                    
+                    <!-- Chat Input -->
+                    <div class="border-t border-gray-200 p-3 bg-white">
+                        <div class="flex items-center">
+                            <input 
+                                x-ref="chatInput"
+                                x-model="chatInput"
+                                @keydown.enter="sendMessage"
+                                type="text" 
+                                placeholder="Спросите о товарах..." 
+                                class="flex-1 border border-gray-300 rounded-l-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            >
+                            <button 
+                                @click="sendMessage" 
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-r-lg transition flex items-center"
+                            >
+                                <span class="mr-1 hidden md:inline">Отправить</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-500 text-center">
+                            Например: "Что у вас есть для геймеров?" или "Ищу подарок для друга"
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <!--/ Toast -->
+    
+    @stack('scripts')
 </body>
 
 </html>
