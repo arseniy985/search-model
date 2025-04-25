@@ -32,7 +32,7 @@
                     <div class="relative">
                         <template x-for="image in images">
                             <div x-show="activeImage === image" class="aspect-w-3 aspect-h-2">
-                                <img :src="image" alt="" class="w-auto mx-auto" />
+                                <img :src="image" alt="" class="w-full h-96 object-contain mx-auto" />
                             </div>
                         </template>
                         <a @click.prevent="prev"
@@ -55,7 +55,7 @@
                             <a @click.prevent="activeImage = image"
                                 class="cursor-pointer w-[80px] h-[80px] border border-gray-300 hover:border-purple-500 flex items-center justify-center"
                                 :class="{ 'border-purple-600': activeImage === image }">
-                                <img :src="image" alt="" class="w-auto max-auto max-h-full" />
+                                <img :src="image" alt="" class="w-full h-full object-cover" />
                             </a>
                         </template>
                     </div>

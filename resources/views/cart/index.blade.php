@@ -36,7 +36,7 @@ use Illuminate\Support\Facades\Vite;
                             <div class="w-full flex flex-col sm:flex-row items-center gap-4 flex-1">
                                 <a :href="product.href"
                                     class="w-36 h-32 flex items-center justify-center overflow-hidden">
-                                    <img :src="product.image" class="object-cover" alt="" />
+                                    <img :src="product.image" class="w-full h-full object-cover" alt="" />
                                 </a>
                                 <div class="flex flex-col justify-between flex-1">
                                     <div class="flex justify-between mb-3">

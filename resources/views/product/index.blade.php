@@ -54,7 +54,7 @@
                 <a href="{{ route('product.view', $product->slug) }}" class="aspect-w-3 aspect-h-2 block overflow-hidden">
                     <img src="{{ $product->image ? Vite::asset('public/storage/' . $product->image) : asset('images/placeholder.png') }}"
                         alt="{{ $product->title }}"
-                        class="object-cover rounded-lg hover:scale-105 hover:rotate-1 transition-transform" />
+                        class="w-full h-48 object-cover rounded-lg hover:scale-105 hover:rotate-1 transition-transform" />
                 </a>
 
                 <div class="p-4">
