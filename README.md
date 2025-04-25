@@ -2,16 +2,6 @@
 
 Это полнофункциональный интернет-магазин, разработанный на Laravel с поддержкой поиска товаров, корзины, оформления заказов и платежей через Stripe.
 
-## Требования к системе
-
-- PHP ^8.1
-- Composer 2.x
-- Node.js & NPM
-- MySQL 5.7+ / MariaDB 10.2+
-- Stripe аккаунт для работы с платежами
-- Настроенный веб-сервер (Apache/Nginx)
-- Firebase аккаунт для дополнительных функций
-
 ## Инструкция по развертыванию
 
 ### 1. Клонирование репозитория
@@ -65,17 +55,6 @@ STRIPE_KEY=pk_test_your_publishable_key
 STRIPE_SECRET=sk_test_your_secret_key
 STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
 
-# Настройки почты
-MAIL_MAILER=smtp
-MAIL_HOST=smtp.mailtrap.io
-MAIL_PORT=2525
-MAIL_USERNAME=your_username
-MAIL_PASSWORD=your_password
-MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS="noreply@hyperxstore.com"
-MAIL_FROM_NAME="${APP_NAME}"
-```
-
 Сгенерируйте ключ приложения:
 
 ```bash
@@ -124,6 +103,7 @@ php artisan storage:link
    
    # Windows (через scoop)
    scoop install stripe
+   ЛИБО  ЖЕ С САЙТА https://docs.stripe.com/stripe-cli
    
    # Linux
    # Загрузите бинарный файл с https://github.com/stripe/stripe-cli/releases/latest
